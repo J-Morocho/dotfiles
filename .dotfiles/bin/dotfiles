@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+
+DOTFILES_DIR="$HOME/.dotfiles"
+
+if ! [ -x "$(command -v ansible)" ]; then
+    sudo apt update -y
+    sudo apt install software-properties-common
+    sudo add-apt-repository --yes --update ppa:ansible/ansible
+    sudo apt install --yes ansible
+fi
+
+if [[ -f "$DOTFILES_DIR/requirements.yml" ]]; then
+    cd "$DOTFILES_DIR"
+
+    ansible-galaxy install -r requirements.yml
+fi
+
+cd "$DOTFILES_DIR"
+
+ansible-playbook --diff "$DOTFILES_DIR/main.yml"
